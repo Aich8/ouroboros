@@ -20,8 +20,8 @@ The goal is a functional UK ecommerce website where customers can browse premium
 
 The existing specs are mostly consistent, but a few points need explicit build decisions:
 
-- Guest checkout is allowed. Account creation is not required to purchase.
-- Login is required for wishlist, saved addresses, newsletter preference management inside an account, and order history.
+- Account creation is required to purchase; guest checkout is not allowed.
+- Login is required to complete checkout, purchase, use wishlist, use saved addresses, manage newsletter preferences inside an account, and view order history.
 - Products should belong to one primary collection. If the implementation uses `collection_ids`, it must enforce only one active public collection per product unless the business later changes this rule.
 - All customer-facing product prices are displayed in GBP.
 - UK delivery must be enforced before payment.
@@ -38,7 +38,7 @@ The P0 launch is considered functional when these customer journeys work end to 
 3. A customer can select required variants, especially UK ring size.
 4. A customer can add available products to cart.
 5. A customer can update cart quantity, remove items, and see subtotal and availability messages.
-6. A customer can check out with a UK delivery address and pay securely in GBP.
+6. A customer can sign in or create an account, check out with a UK delivery address, and pay securely in GBP.
 7. A successful payment creates an order and sends a confirmation email.
 8. A failed payment gives a retry path without losing the cart.
 9. Sold out and coming soon products cannot be purchased.
@@ -59,14 +59,14 @@ The P0 launch is considered functional when these customer journeys work end to 
 | F-007 | Product Detail Pages | P0 | Guest, Customer |
 | F-008 | Ring Size Selection And Guide | P0 | Guest, Customer |
 | F-009 | Cart | P0 | Guest, Customer |
-| F-010 | UK Checkout | P0 | Guest, Customer |
-| F-011 | Payment And Order Creation | P0 | Guest, Customer, Admin |
+| F-010 | UK Checkout | P0 | Customer |
+| F-011 | Payment And Order Creation | P0 | Customer, Admin |
 | F-012 | Transactional Emails | P0 | Guest, Customer, Admin |
 | F-013 | Contact And Enquiries | P0 | Guest, Customer, Admin |
 | F-014 | Required Content And Policy Pages | P0 | Guest, Customer |
 | F-015 | Admin Product And Inventory Operations | P0 | Admin |
 | F-016 | Admin Order And Support Operations | P0 | Admin |
-| F-017 | Customer Authentication | P1 | Customer |
+| F-017 | Customer Authentication | P0 | Guest, Customer |
 | F-018 | Customer Account Area | P1 | Customer |
 | F-019 | Wishlist | P1 | Customer |
 | F-020 | Newsletter And Marketing Preferences | P1 | Guest, Customer, Admin |
@@ -301,6 +301,7 @@ Requirements:
 - Delivery country must be United Kingdom.
 - Required address fields must be completed.
 - Email must use a valid format.
+- Customer must be signed in before payment.
 - Required variants must remain selected.
 - Stock must be rechecked before payment.
 - Checkout totals show product price, quantity, shipping, tax where applicable, and total in GBP.
@@ -310,7 +311,7 @@ Acceptance criteria:
 - A non-UK delivery address cannot complete checkout.
 - Missing required fields show field-level validation.
 - Checkout revalidates stock before payment.
-- Customers can complete checkout without creating an account.
+- Customers must sign in or create an account before payment; guest checkout cannot complete purchase.
 
 ### F-011 Payment And Order Creation
 
@@ -346,7 +347,7 @@ P0 required emails:
 - Order confirmation
 - Payment failed
 - Order dispatched
-- Password reset if accounts are enabled
+- Password reset
 - Contact form acknowledgement if email service is configured
 - Refund issued if refunds are managed through the site or platform
 
@@ -474,9 +475,9 @@ Acceptance criteria:
 
 ### F-017 Customer Authentication
 
-Priority: P1
+Priority: P0
 
-Goal: Provide secure customer accounts for saved data and authenticated features.
+Goal: Provide secure customer accounts for purchasing, saved data, and authenticated features.
 
 Requirements:
 
@@ -697,7 +698,7 @@ Goal: Protect customer data, payment flow, admin functions, and public forms.
 Requirements:
 
 - Production uses HTTPS everywhere.
-- Passwords are securely hashed if accounts are enabled.
+- Passwords are securely hashed.
 - Session cookies are secure.
 - Password reset tokens expire.
 - Login, register, password reset, checkout, and contact forms are rate-limited.
@@ -727,7 +728,7 @@ Required states:
 - No search results
 - Cart empty
 - Wishlist empty if wishlist is enabled
-- Account order history empty if accounts are enabled
+- Account order history empty
 - Product sold out
 - Product coming soon
 - Variant unavailable
@@ -749,6 +750,7 @@ Acceptance criteria:
 
 Minimum P0 entities:
 
+- Customer
 - Product
 - Variant
 - Product Image
@@ -761,7 +763,6 @@ Minimum P0 entities:
 
 P1 entities:
 
-- Customer
 - Address
 - Wishlist Item
 - Marketing Preference
@@ -853,6 +854,9 @@ P0 public pages:
 - Cart
 - Checkout
 - Order Confirmation
+- Sign In
+- Register
+- Password Reset
 - Shipping Information
 - Packaging And Gifting
 - Returns And Exchanges
@@ -862,9 +866,6 @@ P0 public pages:
 
 P1 account pages:
 
-- Sign In
-- Register
-- Password Reset
 - Account Overview
 - Account Details
 - Saved Addresses
@@ -918,7 +919,7 @@ These decisions affect implementation and should be resolved before development 
 - Payment provider and accepted payment methods.
 - VAT registration and tax display.
 - Shipping carrier, shipping cost, free shipping threshold, dispatch timelines, and supported UK territories.
-- Whether accounts, saved addresses, wishlist, and newsletter preference centre are P0 or P1 for the first launch.
+- Which account-area features beyond required sign-in and registration are P0 or P1 for the first launch.
 - Whether gift message support is enabled at launch.
 - Whether back-in-stock notifications are enabled at launch.
 - Whether discount codes or sale pricing are in scope.
@@ -935,6 +936,7 @@ The website is functionally launch-ready when:
 - Product detail pages show complete purchase-critical information.
 - Ring products require UK ring size selection.
 - Cart supports add, remove, quantity update, variant display, subtotal, and availability validation.
+- Customers must sign in or create an account before payment; guest checkout is blocked.
 - Checkout accepts only UK delivery addresses.
 - Payment succeeds through an external provider.
 - Successful payment creates an order and sends confirmation.

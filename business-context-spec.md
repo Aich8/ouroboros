@@ -146,7 +146,7 @@ Cart features:
 - Show subtotal
 - Show shipping estimate or shipping note
 - Persist cart for logged-in users
-- Allow guest browsing before account creation
+- Allow guest browsing and cart building before account creation
 
 The cart should prevent checkout for sold out and coming soon products. Made-to-order products should clearly communicate lead times before checkout.
 
@@ -214,12 +214,15 @@ The checkout flow should be simple, secure, and clear.
 Checkout should include:
 
 - Cart review
+- Account sign-in or account creation before payment
 - Customer contact details
 - UK shipping address
 - Shipping method or shipping confirmation
 - Payment step
 - Order confirmation
 - Confirmation email
+
+Account creation is required to purchase. Guest checkout must not allow payment or order placement without a customer account.
 
 Payment requirements:
 
@@ -356,7 +359,7 @@ Primary user goals:
 - Understand how the jewellery is packaged for gifting
 - Save items to wishlist
 - Add items to cart
-- Create a secure account
+- Create a secure account before purchasing
 - Opt in to email updates if interested
 - Contact the brand when needed
 - Complete a secure UK checkout in GBP
@@ -373,7 +376,7 @@ Key success criteria:
 - Product pages provide all information needed for purchase decisions.
 - Customers understand that jewellery packaging is suitable for gifting.
 - Ring customers can choose a size with guidance.
-- Customers can create secure accounts.
+- Customers can create secure accounts before purchasing.
 - Wishlist and cart behavior is reliable.
 - Email opt-in is clear and optional.
 - UK-only shipping is clearly communicated.
@@ -468,7 +471,7 @@ Checkout is defined at a high level, but several functional decisions remain ope
 
 Clarify:
 
-- Whether guest checkout is allowed or whether customers must create an account to purchase
+- How the required account sign-in or account creation step appears in the checkout flow
 - Which payment provider will be used
 - Which payment methods are accepted
 - Whether PayPal, Apple Pay, Google Pay, Klarna, Clearpay, or similar options are in scope

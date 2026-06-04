@@ -52,8 +52,8 @@ The site must let UK customers discover premium Ouroboros-inspired jewellery, un
 
 These assumptions make the first build functional while leaving commercial decisions configurable.
 
-- Guest checkout is allowed.
-- Account creation is required for purchase and wishlist.
+- Account creation is required to purchase; guest checkout is not allowed.
+- Wishlist also requires login.
 - Products and inventory are managed through an admin interface or ecommerce platform admin.
 - Payments are handled by a trusted external payment provider.
 - The store never stores raw payment card details.
@@ -77,13 +77,14 @@ Can:
 - View ring size guide
 - Add eligible products to cart
 - Update cart
-- Start checkout
+- Start the sign-in or account creation step before checkout
 - Create an account
 - Sign up for newsletter
 - Submit contact forms
 
 Cannot:
 
+- Complete checkout, submit payment, or place an order without an account
 - Save wishlist items
 - View order history
 - Save addresses
@@ -100,6 +101,7 @@ Can do everything a guest customer can do, plus:
 - View order history
 - Save, remove, and move wishlist items to cart
 - Manage newsletter preferences
+- Complete checkout and place orders
 - Reuse saved delivery details at checkout
 - Persist cart across sessions
 
@@ -354,11 +356,12 @@ Purpose: Securely collect contact, delivery, shipping, and payment details.
 Checkout steps:
 
 1. Cart review
-2. Contact details
-3. Delivery address
-4. Shipping method or shipping confirmation
-5. Payment
-6. Confirmation
+2. Sign in or account creation if the customer is not already authenticated
+3. Contact details
+4. Delivery address
+5. Shipping method or shipping confirmation
+6. Payment
+7. Confirmation
 
 Must collect:
 
@@ -376,6 +379,7 @@ Validation rules:
 - Delivery country must be United Kingdom.
 - Required address fields must be completed.
 - Email must use a valid format.
+- Customer must be signed in before payment.
 - Ring size and required variants must remain selected.
 - Checkout must re-check stock before payment.
 
@@ -399,6 +403,7 @@ Confirmation page must include:
 
 Acceptance criteria:
 
+- Guest checkout cannot complete purchase; unauthenticated customers must sign in or create an account before payment.
 - A non-UK delivery address cannot complete checkout.
 - Payment failure does not lose the cart.
 - Successful payment triggers an order confirmation email.
@@ -663,7 +668,7 @@ Fields:
 
 - order_id
 - order_number
-- customer_id optional
+- customer_id
 - email
 - status
 - payment_status
@@ -1183,7 +1188,7 @@ The site is functionally complete when:
 - Sold out and coming soon products cannot be purchased.
 - Made-to-order products show lead time before checkout.
 - Registered customers can use account, saved addresses, order history, wishlist, and newsletter preferences.
-- Guests can browse, cart, and checkout without creating an account.
+- Guests can browse and build a cart, but must sign in or create an account before checkout payment or purchase.
 - Checkout blocks non-UK delivery addresses.
 - Checkout shows product price, shipping, tax where applicable, and total in GBP.
 - Successful payment creates an order and sends confirmation email.
