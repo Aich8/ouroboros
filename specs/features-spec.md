@@ -22,12 +22,17 @@ The existing specs are mostly consistent, but a few points need explicit build d
 
 - Account creation is required to purchase; guest checkout is not allowed.
 - Login is required to complete checkout, purchase, use wishlist, use saved addresses, manage newsletter preferences inside an account, and view order history.
+- The store will use a custom ecommerce storefront.
+- Product catalogue content, product imagery, inventory, orders, refunds, customer enquiries, email preferences, and site content are developer-managed.
+- Product descriptions, collection pages, and other site content are mostly edited by the developer.
 - Products should belong to one primary collection. If the implementation uses `collection_ids`, it must enforce only one active public collection per product unless the business later changes this rule.
-- All customer-facing product prices are displayed in GBP.
+- The business is VAT registered.
+- All customer-facing product prices are displayed in GBP and include VAT or other applicable taxes.
+- UK shipping is free.
 - UK delivery must be enforced before payment.
-- VAT and tax display must be configurable because VAT registration status is not final.
 - Payment card details are handled only by an external payment provider. The website must not store raw card details.
-- Gift messages, back-in-stock alerts, discount codes, and advanced analytics are not launch blockers unless explicitly enabled by the business.
+- Discount codes, sale pricing, bundles, gift cards, and store credit are in scope, with detailed business rules still to be confirmed.
+- Gift messages, back-in-stock alerts, and advanced analytics are not launch blockers unless explicitly enabled by the business.
 
 ## 4. Launch Feature Set
 
@@ -72,7 +77,7 @@ The P0 launch is considered functional when these customer journeys work end to 
 | F-020 | Newsletter And Marketing Preferences | P1 | Guest, Customer, Admin |
 | F-021 | Back-In-Stock And Launch Notifications | P2 | Guest, Customer |
 | F-022 | Gift Options | P2 | Guest, Customer |
-| F-023 | Discounts And Promotions | P2 | Guest, Customer, Admin |
+| F-023 | Discounts And Promotions | P1 | Guest, Customer, Admin |
 | F-024 | Analytics And Consent Tracking | P1 | Admin |
 | F-025 | SEO | P0 | Customer, Admin |
 | F-026 | Accessibility | P0 | Guest, Customer |
@@ -133,12 +138,13 @@ Goal: Store the structured product data needed for browsing, purchase, inventory
 
 Requirements:
 
-- Product records include SKU, name, slug, category, collection, material, finish, description, symbolic meaning, dimensions, weight, care guidance, packaging note, returns note, price in GBP, tax class, availability status, low-stock threshold, made-to-order lead time, publish status, SEO title, and SEO description.
+- Product records include SKU, name, slug, category, collection, material, finish, description, symbolic meaning, dimensions, weight, care guidance, packaging note, returns note, VAT-inclusive price in GBP, tax class, availability status, low-stock threshold, made-to-order lead time, publish status, SEO title, and SEO description.
 - Variant records support ring size, chain length, bracelet size, or other product options.
 - Variant stock overrides product stock when variants exist.
 - Ring stock is tracked by UK ring size.
 - Product image records support main, detail, scale, angle, and packaging images.
 - Product image records include alt text, sort order, and primary image flag.
+- Product imagery uses clean studio product shots and packshots against a pure black background using white lighting.
 - Collection records include name, slug, description, symbolic theme, hero image, SEO title, SEO description, sort order, and publish status.
 
 Acceptance criteria:
@@ -156,7 +162,7 @@ Goal: Let customers browse and evaluate available, sold out, and coming soon pro
 Requirements:
 
 - Shop All displays a product grid.
-- Each product card shows image, name, category, collection, price in GBP, material, and availability status.
+- Each product card shows image, name, category, collection, VAT-inclusive price in GBP, material, and availability status.
 - Product listing supports filters for category, collection, material, availability, price range, and ring size where relevant.
 - Product listing supports sorting by availability at minimum.
 - Filters can be cleared.
@@ -216,10 +222,11 @@ Goal: Give customers enough information to decide whether to buy.
 
 Requirements:
 
-- Show product name, category, collection, price in GBP, material, purity or fineness, availability, description, symbolic inspiration, size, dimensions, weight, care guidance, packaging information, UK shipping information, returns information, and related products or collection link.
+- Show product name, category, collection, VAT-inclusive price in GBP, material, purity or fineness, availability, description, symbolic inspiration, size, dimensions, weight, care guidance, packaging information, UK shipping information, returns information, and related products or collection link.
 - Show made-to-order lead time where applicable.
 - Show hallmarking or material-compliance information where relevant.
 - Include product image gallery with main image and supporting detail views.
+- Product image gallery should support clean studio shots and packshots against a pure black background using white lighting.
 - Include variant selector where applicable.
 - Include quantity selector where applicable.
 - Include Add to Cart button.
@@ -270,7 +277,7 @@ Goal: Let customers review, update, and validate selected items before checkout.
 
 Requirements:
 
-- Cart displays product image, product name, selected variant details, price, quantity, line total, availability messages, subtotal, shipping note or estimate, tax display if applicable, remove action, and checkout button.
+- Cart displays product image, product name, selected variant details, VAT-inclusive price, quantity, line total, availability messages, subtotal, applied discount, sale price, bundle, gift card, or store credit adjustments, free UK shipping note, VAT-inclusive price or tax display, remove action, and checkout button.
 - Customers can update quantity where quantity is allowed.
 - Customers can remove items.
 - Quantity cannot exceed available stock unless the product is made to order.
@@ -304,7 +311,7 @@ Requirements:
 - Customer must be signed in before payment.
 - Required variants must remain selected.
 - Stock must be rechecked before payment.
-- Checkout totals show product price, quantity, shipping, tax where applicable, and total in GBP.
+- Checkout totals show VAT-inclusive product price, quantity, applied discounts, sale prices, bundle adjustments, gift card redemptions, store credit redemptions, free UK shipping, VAT-inclusive price or tax display, and total in GBP.
 
 Acceptance criteria:
 
@@ -325,7 +332,7 @@ Requirements:
 - Website does not store raw payment card data.
 - Payment errors show a clear retry path.
 - Orders are created after successful payment, unless the selected provider requires pending-payment order creation.
-- Successful orders include order number, customer email, order summary, shipping address, shipping method or note, total paid in GBP, dispatch expectation, and support route.
+- Successful orders include order number, customer email, order summary, shipping address, shipping method or free UK shipping note, applied discount, sale price, bundle, gift card, or store credit adjustments where relevant, total paid in GBP with displayed prices including VAT or other applicable taxes, dispatch expectation, and support route.
 - Order item records snapshot product name, variant label, SKU, quantity, unit price, line total, and made-to-order lead time.
 - Stock is reduced only after successful payment unless provider-supported temporary reservation is configured.
 
@@ -446,7 +453,7 @@ Requirements:
 
 Acceptance criteria:
 
-- Admin can publish a complete product without developer intervention, or there is a documented operational method if using a managed platform.
+- The developer can publish a complete product through the custom storefront's admin or documented operational method.
 - Variant stock can be managed for ring sizes.
 - Public product availability updates after admin stock or status changes.
 
@@ -464,7 +471,7 @@ Requirements:
 - Admin can add carrier and tracking number.
 - Admin can mark an order dispatched.
 - Admin can trigger dispatch email.
-- Admin can handle cancellation and refund actions through approved provider or platform workflow.
+- Admin can handle cancellation and refund actions through the approved provider or developer-managed operational workflow.
 - Admin or support user can view enquiries, filter by enquiry type, and mark them open, pending, or resolved.
 
 Acceptance criteria:
@@ -608,21 +615,27 @@ Acceptance criteria:
 
 ### F-023 Discounts And Promotions
 
-Priority: P2
+Priority: P1
 
-Goal: Support promotional pricing only if the business decides it is in scope.
+Goal: Support discount codes, sale pricing, bundles, gift cards, and store credit within the custom ecommerce storefront.
 
 Requirements:
 
-- Discount code support is disabled unless configured.
-- If enabled, discount rules must define eligibility, expiry, usage limits, product restrictions, and tax treatment.
-- Checkout must show discount amount and updated total in GBP.
+- Discount codes can be created with code, discount type, discount value, eligibility rules, start date, end date, usage limit, per-customer limit, active state, and stacking behavior.
+- Sale pricing can be configured for eligible products or variants.
+- Bundle rules can define eligible product combinations and bundle pricing or discount behavior.
+- Gift cards can be issued, redeemed, partially redeemed, and tracked by remaining GBP balance.
+- Store credit can be issued to customer accounts, redeemed at checkout, and tracked through a ledger.
+- Cart and checkout show applied discounts, sale prices, bundle adjustments, gift card redemptions, store credit redemptions, and final total in GBP.
+- Promotion and credit behavior must respect VAT-inclusive pricing and free UK shipping.
 
 Acceptance criteria:
 
-- Invalid codes show clear errors.
-- Discounts do not reduce order total below valid minimums.
-- Refund behavior for discounted orders is defined before launch.
+- Valid discount codes apply the correct adjustment.
+- Invalid, expired, ineligible, or over-limit discount codes show clear errors.
+- Sale prices and bundle adjustments are reflected in product, cart, checkout, and order totals where configured.
+- Gift card and store credit redemption cannot exceed available balance or order total.
+- Orders snapshot applied promotion, gift card, and store credit adjustments.
 
 ### F-024 Analytics And Consent Tracking
 
@@ -873,7 +886,7 @@ P1 account pages:
 - Wishlist
 - Newsletter Preferences
 
-Operational pages or platform screens:
+Operational pages or developer-managed tools:
 
 - Product management
 - Variant and stock management
@@ -915,14 +928,14 @@ Operational pages or platform screens:
 
 These decisions affect implementation and should be resolved before development starts or before the relevant feature is built:
 
-- Ecommerce platform, custom build, or hybrid approach.
+- Systems of record for inventory, customers, orders, payments, and marketing consent.
+- Local, staging, and production environment needs.
 - Payment provider and accepted payment methods.
-- VAT registration and tax display.
-- Shipping carrier, shipping cost, free shipping threshold, dispatch timelines, and supported UK territories.
+- Discount code, sale pricing, bundle, gift card, and store credit business rules.
+- Shipping carrier, dispatch timelines, and supported UK territories.
 - Which account-area features beyond required sign-in and registration are P0 or P1 for the first launch.
 - Whether gift message support is enabled at launch.
 - Whether back-in-stock notifications are enabled at launch.
-- Whether discount codes or sale pricing are in scope.
 - Cookie consent provider or custom implementation.
 - Analytics and advertising tools.
 - Legal business name, address, customer service email, and final policy copy.

@@ -15,7 +15,13 @@ The site must let UK customers discover premium Ouroboros-inspired jewellery, un
 ### 2.1 In Scope
 
 - UK-only ecommerce storefront
-- GBP product pricing
+- Custom ecommerce storefront
+- VAT-inclusive GBP product pricing
+- Discount codes
+- Sale pricing
+- Bundles
+- Gift cards
+- Store credit
 - Product catalogue for bracelets, necklaces, and rings
 - Collection browsing
 - Product listing pages
@@ -30,11 +36,12 @@ The site must let UK customers discover premium Ouroboros-inspired jewellery, un
 - Newsletter opt-in and preference management
 - Contact and enquiry forms
 - UK checkout
+- Free UK shipping
 - External payment processing
 - Order confirmation
 - Transactional emails
 - Shipping, returns, packaging, privacy, terms, and contact content pages
-- Admin or operational method for product, stock, order, and customer support management
+- Developer-managed admin or operational method for product, stock, order, content, and customer support management
 
 ### 2.2 Out Of Scope
 
@@ -54,13 +61,19 @@ These assumptions make the first build functional while leaving commercial decis
 
 - Account creation is required to purchase; guest checkout is not allowed.
 - Wishlist also requires login.
-- Products and inventory are managed through an admin interface or ecommerce platform admin.
+- The store uses a custom ecommerce storefront.
+- Product catalogue content, product imagery, inventory, orders, refunds, customer enquiries, email preferences, and site content are managed by the developer.
+- Product descriptions, collection pages, and other site content are mostly edited by the developer.
+- The systems of record for inventory, customers, orders, payments, and marketing consent are TBD and must remain configurable until confirmed.
 - Payments are handled by a trusted external payment provider.
 - The store never stores raw payment card details.
 - Inventory is checked when adding to cart and again before payment.
-- Stock is reduced only after successful payment unless the payment provider or platform supports temporary checkout reservations.
-- All prices are shown in GBP.
-- VAT registration status is TBD, so the checkout must support configurable tax display.
+- Stock is reduced only after successful payment unless the payment provider or custom checkout flow supports temporary checkout reservations.
+- The business is VAT registered.
+- All prices are shown in GBP and include VAT or other applicable taxes.
+- UK shipping is free.
+- Discount codes, sale pricing, bundles, gift cards, and store credit are in scope.
+- Promotion, gift card, and store credit rules must remain configurable until final business rules are confirmed.
 - UK-only delivery rules must be enforced at checkout.
 - Marketing emails require explicit opt-in or another verified lawful basis before launch.
 - Compliance copy and legal policies require final legal/business review before launch.
@@ -115,10 +128,10 @@ Can:
 - Upload and order product images
 - View, search, and update orders
 - Add dispatch and tracking information
-- Handle refunds through the payment provider or ecommerce platform
+- Handle refunds through the payment provider or developer-managed operational workflow
 - View customer enquiries
 - Export orders and subscriber lists where permitted
-- Manage page content or trigger developer-managed content updates
+- Manage product catalogue content, product imagery, and site content through developer-managed content updates
 - Review audit history for sensitive product, stock, and order changes
 
 ## 5. Information Architecture
@@ -187,7 +200,7 @@ Must include:
 - Product name
 - Category
 - Collection
-- Price in GBP
+- Price in GBP, including VAT or other applicable taxes
 - Material
 - Availability status
 - Filter controls
@@ -255,7 +268,7 @@ Must include:
 - Product name
 - Product category
 - Collection name
-- Price in GBP
+- Price in GBP, including VAT or other applicable taxes
 - Material and purity or fineness
 - Availability status
 - Product description
@@ -281,6 +294,7 @@ Image gallery must support:
 - Close-up detail image
 - Multiple angles where relevant
 - Detail views of clasps, chains, bands, stones, engraving, and texture where present
+- Clean studio product shots and packshots against a pure black background using white lighting
 
 Add to cart rules:
 
@@ -329,8 +343,9 @@ Must include:
 - Availability messages
 - Remove item action
 - Subtotal
-- Shipping estimate or UK shipping note
-- Tax display if applicable
+- Discount code, sale price, bundle, gift card, or store credit adjustments where applied
+- Free UK shipping note
+- VAT-inclusive price or tax display
 - Checkout button
 
 Cart rules:
@@ -386,6 +401,7 @@ Validation rules:
 Payment rules:
 
 - Payment is processed by an external provider.
+- Checkout totals show VAT-inclusive product prices, applied discounts, sale prices, bundle adjustments, gift card redemptions, store credit redemptions, free UK shipping, and total in GBP.
 - Payment errors show a clear retry path.
 - Orders are created only when payment succeeds, or are created as pending payment if required by provider flow.
 - No raw card details are stored by the store.
@@ -396,8 +412,9 @@ Confirmation page must include:
 - Customer email
 - Order summary
 - Shipping address
-- Shipping method or shipping note
-- Total paid in GBP
+- Shipping method or free UK shipping note
+- Applied discount, sale price, bundle, gift card, or store credit adjustments where relevant
+- Total paid in GBP, with displayed prices including VAT or other applicable taxes
 - Expected dispatch or made-to-order lead time
 - Contact support route
 
@@ -674,6 +691,9 @@ Fields:
 - payment_status
 - fulfilment_status
 - subtotal_gbp
+- discount_total_gbp
+- gift_card_total_gbp
+- store_credit_total_gbp
 - shipping_gbp
 - tax_gbp
 - total_gbp
@@ -684,6 +704,9 @@ Fields:
 - tracking_number
 - carrier
 - gift_message
+- applied_discount_codes
+- applied_gift_cards
+- applied_store_credit
 - marketing_opt_in_at_checkout
 - created_at
 - updated_at
@@ -730,6 +753,65 @@ Fields:
 - consent_timestamp
 - unsubscribe_timestamp
 - updated_at
+
+### 7.14 Discount And Promotion
+
+Fields:
+
+- promotion_id
+- code optional
+- name
+- promotion_type
+- discount_type
+- discount_value
+- eligibility_rules
+- starts_at
+- ends_at
+- usage_limit
+- per_customer_limit
+- combinable_with_other_promotions
+- is_active
+
+Promotion types:
+
+- Discount code
+- Sale pricing
+- Bundle
+
+### 7.15 Gift Card
+
+Fields:
+
+- gift_card_id
+- code
+- initial_balance_gbp
+- remaining_balance_gbp
+- issued_to_customer_id optional
+- issued_to_email optional
+- status
+- expires_at optional
+- created_at
+- updated_at
+
+### 7.16 Store Credit Ledger Entry
+
+Fields:
+
+- store_credit_entry_id
+- customer_id
+- order_id optional
+- amount_gbp
+- entry_type
+- reason
+- balance_after_gbp
+- created_at
+
+Entry types:
+
+- Issued
+- Redeemed
+- Refunded
+- Expired
 
 ## 8. Availability And Inventory Rules
 
@@ -1190,31 +1272,30 @@ The site is functionally complete when:
 - Registered customers can use account, saved addresses, order history, wishlist, and newsletter preferences.
 - Guests can browse and build a cart, but must sign in or create an account before checkout payment or purchase.
 - Checkout blocks non-UK delivery addresses.
-- Checkout shows product price, shipping, tax where applicable, and total in GBP.
+- Checkout shows product price, applied discount, sale price, bundle, gift card, or store credit adjustments, free UK shipping, VAT-inclusive price or tax display, and total in GBP.
 - Successful payment creates an order and sends confirmation email.
 - Payment failure gives a clear retry path without losing cart.
 - Contact form routes enquiries with the correct enquiry type.
 - Marketing signup is optional and consent is stored.
 - Required policy pages are accessible from footer.
-- Admin or platform operations can manage products, images, variants, stock, orders, tracking, refunds, and enquiries.
+- Developer-managed operations can manage products, images, variants, stock, orders, tracking, refunds, enquiries, email preferences, and site content.
 - Mobile, accessibility, security, and performance requirements are met at launch baseline.
 
 ## 25. Open Decisions
 
 The following decisions still need business confirmation:
 
-- Ecommerce platform or custom build
+- Systems of record for inventory, customers, orders, payments, and marketing consent
+- Local, staging, and production environment needs
 - Payment provider
 - Accepted payment methods
-- VAT registration and tax display
+- Discount code, sale pricing, bundle, gift card, and store credit business rules
 - Shipping carrier
-- Shipping cost and free shipping threshold
 - Supported UK territories and remote areas
 - Dispatch timelines
 - Made-to-order lead times
 - Return and exchange policy specifics
 - Gift message support
-- Discount code support
 - Back-in-stock notification support
 - Analytics and advertising tools
 - Cookie consent provider or implementation
