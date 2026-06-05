@@ -8,6 +8,8 @@ The store focuses on a small number of carefully presented collections rather th
 
 The store currently ships only within the United Kingdom and sells exclusively in pound sterling.
 
+The store will use a custom ecommerce storefront.
+
 ## 2. Brand Positioning
 
 The brand should appeal to customers who are drawn to symbolic jewellery, ancient motifs, mythology, transformation, renewal, and meaningful personal objects.
@@ -56,6 +58,17 @@ Product collections may be organized by symbolic interpretation, form, or finish
 - Silver Serpent
 - White Gold Ouroboros
 
+Product and variant data requirements:
+
+- Each product should define a product ID, SKU, URL slug, category, collection, material and purity or fineness, finish, dimensions, weight, availability status, made-to-order lead time where relevant, SEO title, and meta description.
+- Products should define stock quantity directly when the product has no purchase-relevant variants.
+- Products with variants should define variant records with variant SKU, option type, option value, stock quantity, availability status, and made-to-order lead time where relevant.
+- Variant options may include ring size, chain length, bracelet size, clasp type, engraving, stones, texture, or other product-specific choices that affect purchase decisions.
+- Inventory should be tracked at variant level where variants affect purchase decisions.
+- Rings should be tracked by UK ring size.
+- Necklaces and bracelets should be tracked by length or size if those options exist.
+- Product images should include descriptive alt text and should be connected to the relevant product or variant where needed.
+
 ## 5. Product Detail Requirements
 
 Each product page must give buyers enough information to make a confident purchase decision.
@@ -93,6 +106,8 @@ Product images should include:
 - Scale or worn image where possible
 - Multiple angles where relevant
 - Clear view of clasps, chains, bands, stones, engraving, or texture if present
+
+Product imagery should use clean studio product shots and packshots, with products shot against a pure black background using white lighting.
 
 ## 6. Ring Sizing Requirements
 
@@ -146,7 +161,7 @@ Cart features:
 - Show subtotal
 - Show shipping estimate or shipping note
 - Persist cart for logged-in users
-- Allow guest browsing before account creation
+- Allow guest browsing and cart building before account creation
 
 The cart should prevent checkout for sold out and coming soon products. Made-to-order products should clearly communicate lead times before checkout.
 
@@ -214,12 +229,15 @@ The checkout flow should be simple, secure, and clear.
 Checkout should include:
 
 - Cart review
+- Account sign-in or account creation before payment
 - Customer contact details
 - UK shipping address
 - Shipping method or shipping confirmation
 - Payment step
 - Order confirmation
 - Confirmation email
+
+Account creation is required to purchase. Guest checkout must not allow payment or order placement without a customer account.
 
 Payment requirements:
 
@@ -252,6 +270,16 @@ Shipping details should include:
 - Made-to-order lead times where relevant
 - Delivery restrictions
 - Tracking availability
+
+Resolved shipping and fulfilment rules:
+
+- UK-only shipping includes England, Scotland, Wales, Northern Ireland, Highlands and Islands, Isle of Man, and BFPO addresses.
+- Carrier service options should support secure jewellery delivery.
+- Delivery is tracked, and tracking progress should be visible in the customer's account.
+- In-stock products should usually dispatch within 1-3 business days.
+- Made-to-order products have a 2-8 week lead time, and the buyer should be notified by email.
+- If an order contains both in-stock and made-to-order items, checkout should let the buyer choose whether to buy available items separately or wait for the made-to-order item so everything can be shipped together.
+- Lost, delayed, or damaged parcel cases should be handled through customer service. The customer should provide proof through customer service, and refunds should require developer approval before being issued.
 
 If a customer enters a non-UK shipping address, checkout should prevent completion and explain that the store currently ships only within the UK.
 
@@ -318,6 +346,12 @@ Recommended pages:
 - Cart
 - Checkout
 
+Content and operational management expectations:
+
+- Product catalogue content and product imagery will be managed by the developer.
+- Product descriptions, collection pages, and other site content will mostly be edited by the developer.
+- Products, images, inventory, orders, refunds, customer enquiries, email preferences, and site content will be managed by the developer.
+
 ## 17. Trust And Compliance Context
 
 The store should communicate trust clearly because it sells high value personal items online.
@@ -356,7 +390,7 @@ Primary user goals:
 - Understand how the jewellery is packaged for gifting
 - Save items to wishlist
 - Add items to cart
-- Create a secure account
+- Create a secure account before purchasing
 - Opt in to email updates if interested
 - Contact the brand when needed
 - Complete a secure UK checkout in GBP
@@ -373,7 +407,7 @@ Key success criteria:
 - Product pages provide all information needed for purchase decisions.
 - Customers understand that jewellery packaging is suitable for gifting.
 - Ring customers can choose a size with guidance.
-- Customers can create secure accounts.
+- Customers can create secure accounts before purchasing.
 - Wishlist and cart behavior is reliable.
 - Email opt-in is clear and optional.
 - UK-only shipping is clearly communicated.
@@ -384,6 +418,7 @@ Key success criteria:
 
 In scope:
 
+- Custom ecommerce storefront
 - UK-only ecommerce store
 - GBP pricing
 - Silver and white gold jewellery
@@ -398,6 +433,7 @@ In scope:
 - Email marketing opt-in
 - Contact support
 - Secure checkout and shipping flow
+- Developer-managed product, content, inventory, order, refund, enquiry, and email preference operations
 
 Out of scope for the current version:
 
@@ -407,3 +443,277 @@ Out of scope for the current version:
 - Large multi-brand catalogue
 - Physical store pickup unless added later
 - Custom design studio unless added later
+
+## 21. Grey Zones To Resolve Before Build
+
+The spec defines the brand, core ecommerce journey, product requirements, account expectations, wishlist, cart, and UK checkout well. The areas below are not yet fully defined and should be clarified before implementation so the site can be built consistently and operated after launch.
+
+### 21.1 Systems Of Record And Environments
+
+Clarify:
+
+- The system of record for inventory, customers, orders, payments, and marketing consent
+- Whether the site needs local, staging, and production environments
+
+### 21.2 Pricing, Tax, And Promotions
+
+The spec confirms GBP pricing, but commercial pricing rules need to be made explicit.
+
+Clarify:
+
+- How refunds, partial refunds, shipping refunds, and cancelled orders should be handled
+
+### 21.3 Checkout Scope And Payment Behavior
+
+Checkout is defined at a high level, but several functional decisions remain open.
+
+Clarify:
+
+- Which payment provider will be used
+- How payment failures, abandoned checkout, stock changes during checkout, and session expiry should behave
+- What exact information appears on the order confirmation page and confirmation email
+
+### 21.4 Order Lifecycle
+
+The site needs a clear order state model.
+
+Recommended order statuses:
+
+- Pending payment
+- Payment failed
+- Paid
+- Processing
+- Made to order
+- Ready to dispatch
+- Dispatched
+- Delivered
+- Cancelled
+- Refunded
+- Partially refunded
+- Returned
+
+Clarify who can change each status, which changes trigger emails, and what the customer can see in their account order history.
+
+### 21.5 Transactional Email Requirements
+
+Marketing email is covered, but operational email needs more detail.
+
+Define email templates for:
+
+- Account verification if required
+- Password reset
+- Order confirmation
+- Payment failed
+- Order dispatched
+- Tracking information
+- Order cancelled
+- Refund issued
+- Return or exchange update
+- Back-in-stock notification
+- Contact form acknowledgement
+- Newsletter subscription confirmation if double opt-in is used
+
+Transactional emails should not include marketing content unless the customer has separately opted in to marketing.
+
+### 21.6 Returns, Exchanges, And Cancellations
+
+Returns are referenced, but the operational policy needs to be detailed.
+
+Clarify:
+
+- Return window
+- Exchange window
+- Whether ring size exchanges are supported
+- Who pays return postage
+- Refund timing
+- Condition requirements for returned jewellery
+- Whether worn, damaged, altered, engraved, personalised, or made-to-order items are handled differently
+- Whether customers can cancel before dispatch
+- Whether customers can cancel made-to-order items after production has started
+- Whether gift orders can be returned or exchanged by the recipient
+
+### 21.7 UK Legal And Compliance Content
+
+The site sells precious metal jewellery online, so legal and compliance content should be treated as a launch requirement.
+
+Add or confirm:
+
+- Legal business name
+- Business trading address or registered address
+- Customer service email address
+- Terms and conditions
+- Privacy policy
+- Cookie policy
+- Returns and cancellation policy
+- Standard cancellation form where required
+- Clear material descriptions for silver and white gold products
+- Hallmarking information for precious metal items where legally required
+- Online Dealer's Notice or equivalent hallmark explanation
+- Marketing consent records and unsubscribe controls
+- Data retention rules for customer, order, enquiry, and marketing data
+
+Compliance details should be checked against current UK guidance before launch.
+
+### 21.8 Privacy, Cookies, Analytics, And Tracking
+
+The account and marketing requirements mention data protection, but tracking and analytics are not defined.
+
+Clarify:
+
+- Which analytics tools are used
+- Which advertising pixels or remarketing tools are used, if any
+- Which cookies are strictly necessary
+- Which cookies require consent
+- Whether cookie preferences can be changed after initial consent
+- Which third-party processors handle customer data
+- Data retention periods for accounts, orders, wishlists, abandoned carts, enquiries, and marketing consent
+- How customers can request account deletion or data access
+
+### 21.9 Search, Filtering, Sorting, And Navigation
+
+The page list is clear, but product discovery behavior needs to be defined.
+
+Clarify:
+
+- Whether the site has search
+- Searchable fields such as product name, collection, category, material, and symbolic meaning
+- Filters for category, collection, material, price, availability, ring size, finish, and gift suitability
+- Sort options such as newest, price low to high, price high to low, collection, and availability
+- Product listing pagination or infinite scroll
+- Breadcrumb behavior
+- Empty state behavior when no products match filters
+
+### 21.10 Account, Cart, And Wishlist Edge Cases
+
+The core features are defined, but edge cases should be specified.
+
+Clarify:
+
+- Whether carts persist for guest users
+- How guest carts merge after login
+- Whether wishlist items can be saved across devices
+- Whether duplicate wishlist items are prevented
+- Whether customers can buy multiple quantities of the same item
+- Quantity limits for low-stock or one-of-a-kind products
+- What happens when a saved cart item becomes sold out
+- What happens when a saved wishlist item changes price
+- Whether customers can delete their account
+- Whether saved addresses require validation
+
+### 21.11 Inventory Reservation Rules
+
+Inventory behavior is important for limited products.
+
+Clarify:
+
+- Whether stock is reserved when an item is added to cart or only after payment
+- How long checkout inventory reservations last, if used
+- Whether low stock thresholds are fixed or product-specific
+- Whether overselling is ever allowed
+- Whether made-to-order products have production capacity limits
+- Whether coming soon and sold out products support back-in-stock signups
+- Whether admin users can manually adjust stock
+
+### 21.12 Admin And Support Operations
+
+The customer-facing site is described, but internal operations are not.
+
+Clarify whether admins need to:
+
+- Create and edit products
+- Upload and reorder product images
+- Manage collections
+- Manage inventory by variant
+- View, search, and update orders
+- Issue refunds
+- Add tracking numbers
+- Export orders
+- View customer enquiries
+- Reply to contact form submissions
+- Export marketing subscribers
+- Manage homepage and collection page content
+- See audit history for stock and order changes
+
+### 21.13 Content And Asset Requirements
+
+The spec calls for high quality images, but asset requirements should be more specific.
+
+Clarify:
+
+- Required image aspect ratios and minimum resolutions
+- Photography style for product-only, worn, detail, and packaging images
+- Whether model releases are required for worn imagery
+- Whether every product must have the same minimum image set
+- Final product copy ownership and approval process
+- Collection story copy
+- Homepage merchandising order
+- Accessibility-focused alt text
+- Empty, loading, error, and confirmation state copy
+
+### 21.14 Accessibility, SEO, And Performance
+
+These are not yet specified but are important for a polished ecommerce site.
+
+Add expectations for:
+
+- Mobile-first responsive design
+- Keyboard navigation
+- Screen reader friendly forms and product options
+- Accessible contrast and focus states
+- Accessible error messages
+- SEO-friendly product and collection URLs
+- Product structured data where appropriate
+- Optimised images
+- Fast page load on mobile connections
+- Sitemap and robots rules
+- 404, 500, and maintenance pages
+
+### 21.15 Security And Abuse Prevention
+
+The spec mentions secure accounts, but implementation-level security expectations should be clearer.
+
+Add requirements for:
+
+- HTTPS everywhere
+- Secure password reset tokens
+- Rate limiting for login, registration, password reset, contact forms, and checkout attempts
+- CSRF protection where relevant
+- Protection against common injection and cross-site scripting risks
+- Secure session expiry behavior
+- Admin-only access controls
+- Audit logging for sensitive admin actions
+- Fraud review flow for suspicious orders
+- No storage of raw card details
+
+### 21.16 MVP Versus Later Features
+
+The current scope is broad for a first ecommerce release. Define what must exist at launch and what can be launched later.
+
+Recommended launch-critical features:
+
+- Product listing pages
+- Product detail pages
+- Variant selection
+- Ring size guide
+- Cart
+- UK checkout
+- Secure payment
+- Order confirmation email
+- Shipping information
+- Returns and cancellation information
+- Privacy policy
+- Terms and conditions
+- Contact page
+- Basic admin or operational method for managing products, orders, and inventory
+
+Potential later features if launch needs to be smaller:
+
+- Wishlist
+- Full customer account area
+- Saved addresses
+- Newsletter preference centre
+- Back-in-stock notifications
+- Advanced filtering and sorting
+- Discount codes
+- Gift messages
+- Analytics dashboards
