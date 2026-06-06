@@ -461,10 +461,6 @@ Out of scope for the current version:
 - Physical store pickup unless added later
 - Custom design studio unless added later
 
-## 21. Grey Zones To Resolve Before Build
-
-The spec defines the brand, core ecommerce journey, product requirements, account expectations, wishlist, cart, and UK checkout well. The areas below are not yet fully defined and should be clarified before implementation so the site can be built consistently and operated after launch.
-
 ### 21.1 Platform And Source Of Truth
 
 The store will use a custom ecommerce platform.
