@@ -219,8 +219,6 @@ Required filters:
 Required sort options:
 
 - Availability.
-- Price low to high if supported by product data.
-- Price high to low if supported by product data.
 - Newest if product publish dates are available.
 
 Rules:
@@ -447,7 +445,7 @@ UK address fields:
 - Building or house number and street.
 - Locality or dependent locality, if applicable.
 - POST TOWN or city, stored and displayed in ALL CAPS.
-- Postcode, such as EH14 5AN.
+- Postcode
 
 Validation rules:
 
